@@ -21,7 +21,7 @@ workdir = Path.cwd().parent / "_WORK_DIR_" / "magisk"
 
 if not magisk_apk:
     magisk_apk = "stable"
-if magisk_apk == "stable" or magisk_apk == "beta" or magisk_apk == "canary" or magisk_apk == "debug":
+if magisk_apk in ["stable", "beta", "canary", "debug"]:
     magisk_apk = json.loads(requests.get(
         f"https://github.com/topjohnwu/magisk-files/raw/master/{magisk_apk}.json").content)['magisk']['link']
 
@@ -70,6 +70,5 @@ with zipfile.ZipFile(out_file) as zip:
     else:
         extract_as(
             zip, f"lib/{ abi_map['x64'][0] }/libmagiskinit.so", "magiskpolicy", ".")
-    extract_as(zip, f"assets/boot_patch.sh", "boot_patch.sh", "magisk")
-    extract_as(zip, f"assets/util_functions.sh",
-               "util_functions.sh", "magisk")
+    extract_as(zip, "assets/boot_patch.sh", "boot_patch.sh", "magisk")
+    extract_as(zip, "assets/util_functions.sh", "util_functions.sh", "magisk")

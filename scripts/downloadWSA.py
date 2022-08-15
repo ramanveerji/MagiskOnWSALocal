@@ -20,7 +20,7 @@ release_type_map = {"retail": "Retail", "release preview": "RP",
 release_type = release_type_map[sys.argv[2]] if sys.argv[2] != "" else "Retail"
 
 cat_id = '858014f3-3934-4abe-8078-4aa193e74ca8'
-print("arch=" + arch + " release_type=" + release_type)
+print(f"arch={arch} release_type={release_type}")
 
 with open(Path.cwd().parent / ("xml/GetCookie.xml"), "r") as f:
     cookie_content = f.read()
@@ -48,11 +48,12 @@ out = requests.post(
 
 doc = minidom.parseString(html.unescape(out.text))
 
-filenames = {}
-for node in doc.getElementsByTagName('Files'):
-    filenames[node.parentNode.parentNode.getElementsByTagName(
-        'ID')[0].firstChild.nodeValue] = f"{node.firstChild.attributes['InstallerSpecificIdentifier'].value}_{node.firstChild.attributes['FileName'].value}"
-    pass
+filenames = {
+    node.parentNode.parentNode.getElementsByTagName('ID')[
+        0
+    ].firstChild.nodeValue: f"{node.firstChild.attributes['InstallerSpecificIdentifier'].value}_{node.firstChild.attributes['FileName'].value}"
+    for node in doc.getElementsByTagName('Files')
+}
 
 identities = []
 for node in doc.getElementsByTagName('SecuredFragment'):
@@ -84,7 +85,6 @@ for i, v, f in identities:
     doc = minidom.parseString(out.text)
     for l in doc.getElementsByTagName("FileLocation"):
         url = l.getElementsByTagName("Url")[0].firstChild.nodeValue
-        if len(url) != 99:
-            if not os.path.isfile(out_file):
-                print(f"downloading link: {url} to {out_file}", flush=True)
-                urllib.request.urlretrieve(url, out_file)
+        if len(url) != 99 and not os.path.isfile(out_file):
+            print(f"downloading link: {url} to {out_file}", flush=True)
+            urllib.request.urlretrieve(url, out_file)

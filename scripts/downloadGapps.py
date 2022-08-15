@@ -23,7 +23,7 @@ abi_map = {"x64": "x86_64", "arm64": "arm64"}
 # download the corresponding version
 release = "11.0"
 try:
-    res = requests.get(f"https://api.opengapps.org/list")
+    res = requests.get("https://api.opengapps.org/list")
     j = json.loads(res.content)
     link = {i["name"]: i for i in j["archs"][abi_map[arch]]
             ["apis"][release]["variants"]}[variant]["zip"]
